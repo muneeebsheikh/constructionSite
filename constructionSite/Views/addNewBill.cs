@@ -34,7 +34,7 @@ namespace constructionSite.Views
         private void initCtor()
         {
             lblDisplayNameFull = lblDisplayName;
-            if(lblDisplayName.Length > 15)
+            if(lblDisplayName.Length > 50)
             {
                 lblDisplayName = lblDisplayName.Substring(0, 50) + "...";
             }
