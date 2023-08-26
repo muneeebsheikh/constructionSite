@@ -18,6 +18,7 @@ namespace constructionSite.Views
         static string dir = Application.StartupPath;
         Image img;
         String openFileDialougPath = "a";
+        Logger.Logger _log = new Logger.Logger("addNewBill");
         bool flagOpenFileDialouge = false;
 
         AccessProject ap = new AccessProject();
@@ -239,6 +240,7 @@ namespace constructionSite.Views
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            _log.Info("Adding new Bill");
             string date= datePicker.Value.ToString("yyyy-MM-dd");
             string billNumber = txtBillNumber.Text.ToString();
             string amount = txtAmount.Text.ToString();
@@ -246,7 +248,6 @@ namespace constructionSite.Views
             string type = "";
 
             //MessageBox.Show(date);
-
             if (chkboxJama.Checked == true)
             {
                 type = "Jama";
@@ -255,10 +256,12 @@ namespace constructionSite.Views
             {
                 type = "Naam";
             }
+            _log.Info($"billNo: {billNumber}, billType: {type}, amount: {amount}");
             
 
            if(txtBillNumber.Text =="" || txtAmount.Text == "")
             {
+                _log.Info($"billNo: {billNumber} - Bill Not created - Validation Error - Bill No And Amount is required");
                 MessageBox.Show("Bill No And Amount is required");
             }
             else
@@ -269,26 +272,30 @@ namespace constructionSite.Views
                     {
                         if(flagOpenFileDialouge == true)
                         {
+                            _log.Info($"billNo: {billNumber} - Open file dialouge: true");
                             string iName = openFileDialog1.FileName;
                             string folder = @"workerBillImages\";
                             var path = Path.Combine(folder, Path.GetFileName(iName));
-                            Console.WriteLine("path:" + path);
+                            _log.Info("path: " + path);
                             if (!Directory.Exists(folder))
                             {
+                                _log.Info($"Directory created! {folder}");
                                 Directory.CreateDirectory(folder);
                             }
 
                             if (File.Exists(path))
                             {
+                                _log.Info("File already exists - ${path}");
                                 string newFilename = ap.getFilename(iName) + txtBillNumber.Text;
                                 string ext = ap.getExtension(iName);
                                 //iName = newFilename + ext;
                                 path = Path.Combine(folder, Path.GetFileName(newFilename + ext));
-                                Console.WriteLine("path2:" + path);
+                                _log.Info("path2: " + path);
                             }
                             if (!File.Exists(path))
                             {
-                                Console.WriteLine("path3:" + path);
+                                _log.Info($"File does not exists - {path}");
+                                _log.Info("path3: " + path);
                                 File.Copy(iName, path);
                             }
 
@@ -297,7 +304,6 @@ namespace constructionSite.Views
                         }
                         else { txtImagePath.Text = ""; }
                         
-
 
                         projBill = new Project.Bill();
                         projBill.amount = amount;

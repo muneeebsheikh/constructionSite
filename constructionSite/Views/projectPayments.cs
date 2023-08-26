@@ -45,12 +45,6 @@ namespace constructionSite.Views
 
         private void mainTableFormat()
         {
-            //dgvPayment.Columns["DATE"].FillWeight = 10;
-            //dgvPayment.Columns["NAME"].FillWeight = 20;
-            //dgvPayment.Columns["PARTICULARS"].FillWeight = 40;
-            //dgvPayment.Columns["NAAM"].FillWeight = 10;
-            //dgvPayment.Columns["RECIEVED AMOUNT"].FillWeight = 10;
-            //dgvPayment.Columns["BALANCE"].FillWeight = 10;
             var docWidth = dgvPayment.Width;
             if (!chkRecivedPayments.Checked)
             {
@@ -75,14 +69,6 @@ namespace constructionSite.Views
         }
         private void formReload()
         {
-            //DataTable dt = ap.getMainTable(this.p);
-
-            //dgvPayment.ColumnCount = 0;
-            //dgvPayment.DataSource = dt;
-            //dgvPayment.AutoResizeColumns();
-            //dgvPayment.AutoResizeRows();
-            //dgvPayment.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            ////mainTableFormat();
             dgvPayment.DefaultCellStyle.Font = Global.getSystemFont(11);
             dgvPayment.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(11);
             dgvPayment.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -105,16 +91,8 @@ namespace constructionSite.Views
                     balancetWidth = dgvTemp.Columns["BALANCE"].Width;
                 }
 
-                //dgvTemp.Columns["DATE"].Width = 100;
-                //dgvTemp.Columns["NAME"].Width = 100;
-                //dgvTemp.Columns["PARTICULARS"].Width = 250;
-                //dgvTemp.Columns["RECIEVED AMOUNT"].Width = 100;
-                //dgvTemp.Columns["NAAM"].Width = 100;
-                //dgvTemp.Columns["BALANCE"].Width = 150;
-
-
-                dgvTemp.Columns["DATE"].Width = Global.GetScreenWidthInPixcel(10, docWidth);
-                dgvTemp.Columns["NAME"].Width = Global.GetScreenWidthInPixcel(25, docWidth);
+                dgvTemp.Columns["DATE"].Width = Global.GetScreenWidthInPixcel(15, docWidth);
+                dgvTemp.Columns["NAME"].Width = Global.GetScreenWidthInPixcel(20, docWidth);
                 dgvTemp.Columns["PARTICULARS"].Width = Global.GetScreenWidthInPixcel(35, docWidth);
                 dgvTemp.Columns["RECIEVED AMOUNT"].Width = Global.GetScreenWidthInPixcel(10, docWidth);
                 dgvTemp.Columns["NAAM"].Width = Global.GetScreenWidthInPixcel(10, docWidth);
@@ -152,9 +130,7 @@ namespace constructionSite.Views
             dgvTemp.AutoResizeRows();
 
             bmp = new Bitmap(dgvTemp.Width, dgvTemp.Height);
-            //bmp = new Bitmap(printWidth, printHeight);
             dgvTemp.DrawToBitmap(bmp, new Rectangle(0, 0, dgvTemp.Width, dgvTemp.Height));
-            //dgvTemp.DrawToBitmap(bmp, new Rectangle(0, 0, printWidth, printHeight));
             dgvTemp.Height = height;
             dgvTemp.Width = dvgWidth;
             SetColwidth();
@@ -183,7 +159,6 @@ namespace constructionSite.Views
                     {
                         dgvTemp.Columns.Add(dgvc.Clone() as DataGridViewColumn);
                         dgvTemp.Columns[colCount].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-                        //dgvTemp.Columns[colCount].Width = dgvc.Width;
                         colCount++;
                     }
                 }
@@ -216,35 +191,11 @@ namespace constructionSite.Views
         
         private void bunifuFlatButton1_Click(object sender, EventArgs e)
         {
-            
-            //int rowCount = dgvPayment.Rows.Count ;
-            //int rowsPerPage = 40;
             CopyDataGridView(0, dgvPayment.Rows.Count);
             SetColwidth();
             var fileName = p.plotNo + (chkRecivedPayments.Checked ? " - Received Payments" : "");
-            Extensions.PrintPDF(dgvTemp, fileName);
+            Extensions.PrintPDF(dgvTemp, fileName, $"All Payments\nTitle: {fileName}");
             dgvTemp.Dispose();
-
-            //if (dgvPayment.Rows.Count > rowsPerPage)
-            //{
-            //    int preCount = 0;
-            //    int count = rowsPerPage;
-            //    while(count <= rowCount)
-            //    {
-            //        CopyDataGridView(preCount, count);
-            //        printDoc();
-            //        preCount = count;
-            //        count += rowsPerPage;
-
-            //    }
-            //    CopyDataGridView( preCount, rowCount);
-            //    printDoc();
-            //}
-            //else
-            //{
-            //    CopyDataGridView(0, rowCount);
-            //    printDoc();
-            //}
 
         }
 
@@ -274,9 +225,6 @@ namespace constructionSite.Views
                 dgvPayment.DataSource = ap.getMainTable(p: this.p, fromdate: fromDate, todate: toDate);
             }
             mainTableFormat();
-            //dgvPayment.AutoResizeColumns();
-            //dgvPayment.AutoResizeRows();
-            //dgvPayment.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             formReload();
         }
 
@@ -297,9 +245,6 @@ namespace constructionSite.Views
                 dgvPayment.DataSource = ap.getMainTable(p: this.p, fromdate: fromDate, todate: toDate);
             }
             mainTableFormat();
-            //dgvPayment.AutoResizeColumns();
-            //dgvPayment.AutoResizeRows();
-            //dgvPayment.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             formReload();
 
         }
@@ -322,9 +267,6 @@ namespace constructionSite.Views
                 dgvPayment.DataSource = ap.getMainTable(p: this.p, fromdate: fromDate, todate: toDate);
             }
             mainTableFormat();
-            //dgvPayment.AutoResizeColumns();
-            //dgvPayment.AutoResizeRows();
-            //dgvPayment.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
         }
 
@@ -354,7 +296,6 @@ namespace constructionSite.Views
                     payment2.amount = row.Cells["AMOUNT"].Value.ToString();
                     payment2.serialNo = row.Cells["SNO"].Value.ToString();
                     payment2.date = row.Cells["DATE"].Value.ToString();
-                   // payment2.description = row.Cells["PAYMENT_DESCRIPTION"].Value.ToString();
                     payment2.description = vv;
 
                     RecivePayment paymentForm = new RecivePayment(this.p, payment2);

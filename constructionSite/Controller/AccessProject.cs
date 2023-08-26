@@ -11,6 +11,7 @@ namespace constructionSite.Controller
     class AccessProject
     {
         DbHelper db;
+        private readonly Logger.Logger _log = new Logger.Logger("AccessProject");
         public AccessProject()
         {
 
@@ -53,17 +54,20 @@ namespace constructionSite.Controller
 
         public void addNewWorkerBill(Project p, Project.Worker pw)
         {
+            _log.Info("addNewWorkerBill started");
             int lastind = pw.bills.Count - 1;
+            _log.Info($"project bill count: {pw.bills.Count}");
             Project.Bill b = pw.bills[lastind];
             if (DateTime.Parse(b.date) > DateTime.Now)
             {
-                Console.WriteLine("Future Date Cannot be Entered");
-                return;
+                _log.Info("Future Date Cannot be Entered");
+                throw new Exception("Future Date Cannot be Entered");
             }
             int noOfRows = db.insertWorkerBill(billno: b.billNo, date: b.date, amount: Int32.Parse(b.amount), imagePath: b.imagePath, particular: b.particular,
                 type: b.type, personName: pw.personName, projectName: p.name, projectPlotNo: p.plotNo);
             if (noOfRows < 1)
             {
+                _log.Info($"Unable to add new Bill. Maybe already added! - noOfRows: {noOfRows}");
                 MessageBox.Show("Unable to add new Bill. Maybe already added!");
             }
         }

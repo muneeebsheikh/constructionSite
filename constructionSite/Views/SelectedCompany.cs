@@ -173,7 +173,6 @@ namespace constructionSite.Views
                 var r = row.Clone() as DataGridViewRow;
                 for (int i = 0; i < row.Cells.Count; i++)
                 {
-                    //DataGridViewCell cell = row.Cells[i].Clone() as DataGridViewCell;
                     r.Cells[i].Value = row.Cells[i].Value; 
                 }
                 dgvTemp.Rows.Add(r);
@@ -201,72 +200,17 @@ namespace constructionSite.Views
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-
             var dgvTemp = GetTempDgv();
-
-            //int height = dgvTemp.Height;
-            //int dvgWidth = dgvTemp.Width;
             int printWidth = 800;
             dgvTemp.Width = printWidth;
             
             SetTempColWidth(dgvTemp);
 
             dgvTemp.Height = dgvTemp.RowCount * dgvTemp.RowTemplate.Height * 2;
-            //dgvTemp.AutoResizeRows();
-            //bmp = new Bitmap(dgvTemp.Width, dgvTemp.Height);
-
-            ////RectangleF rectf = new RectangleF(70, 90, 90, 50);
-            //RectangleF rectf = new Rectangle(0, 0, dgvTemp.Width, dgvTemp.Height);
-
-            //Graphics g = Graphics.FromImage(bmp);
-
-            //g.SmoothingMode = SmoothingMode.AntiAlias;
-            //g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            //g.DrawString(projectCompany.personName + " - " + projectCompany.companyName, new Font("Tahoma", 8), Brushes.Black, rectf);
-
-            //bmp = new Bitmap(dgvTemp.Width, dgvTemp.Height, g); 
-
-            //dgvTemp.DrawToBitmap(bmp, new Rectangle(0, 50, dgvTemp.Width, dgvTemp.Height));
-            var fileName = projectCompany.companyName + " - " + projectCompany.personName;
-            Extensions.PrintPDF(dgvTemp, fileName);
+            
+            var fileName = projectCompany.companyName + " - " + projectCompany.personName + " - " + "Company";
+            Extensions.PrintPDF(dgvTemp, fileName, $"Title: All Bills\nType: Company\nName: {projectCompany.personName}\nCompanyName: {projectCompany.companyName}\nContact: {projectCompany.contactNo}");
             dgvTemp.Dispose();
-
-
-            //dgvTemp.Height = height;
-            //dgvTemp.Width = dvgWidth;
-
-            ////SetTempColWidth(dgvTemp);
-
-            //printPreviewDialog1.ShowDialogWithMargin();
-
-
-
-
-            //dgvBills.DefaultCellStyle.Font = Global.getSystemFont(9);
-            //dgvBills.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(8);
-
-
-            //int height = dgvBills.Height;
-            //int printWidth = 800;
-            //int dvgWidth = dgvBills.Width;
-            //dgvBills.Width = printWidth;
-
-            //dgvBills.Height = dgvBills.RowCount * dgvBills.RowTemplate.Height * 2;
-            //bmp = new Bitmap(dgvBills.Width, dgvBills.Height);
-            //dgvBills.DrawToBitmap(bmp, new Rectangle(0, 0, dgvBills.Width, dgvBills.Height));
-            //dgvBills.Height = height;
-            //dgvBills.Width = dvgWidth;
-
-            //dgvBills.DefaultCellStyle.Font = Global.getSystemFont(11);
-            //dgvBills.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(11);
-
-            //printPreviewDialog1.ShowDialog();
-
-
-
-
-
 
         }
     }

@@ -66,40 +66,35 @@ namespace constructionSite.Views
             txtEmail.Text = projectWorker.email;
             txtTypeOfWork.Text = projectWorker.typeOfWork;
 
-            //try
-            //{
+            
 
                 ////////////// Binding Selected Columns of DGRID1//////////////////////
 
-                DataTable dt = ap.getWorkerBills(this.p, this.projectWorker);
-                dgvBills.ColumnCount = 0;
-                dgvBills.DataSource = dt;
+            DataTable dt = ap.getWorkerBills(this.p, this.projectWorker);
+            dgvBills.ColumnCount = 0;
+            dgvBills.DataSource = dt;
 
-                dgvBills.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+            dgvBills.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 
-                dgvBills.AutoResizeColumns();
-                dgvBills.AutoResizeRows();
-                dgvBills.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                this.dgvBills.Columns["IMAGEPATH"].Visible = false;
-                this.dgvBills.Columns["TYPE"].Visible = false;
-                this.dgvBills.Columns["AMOUNT"].Visible = false;
-                this.dgvBills.Columns["rowid"].Visible = false;
+            dgvBills.AutoResizeColumns();
+            dgvBills.AutoResizeRows();
+            dgvBills.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvBills.Columns["IMAGEPATH"].Visible = false;
+            this.dgvBills.Columns["TYPE"].Visible = false;
+            this.dgvBills.Columns["AMOUNT"].Visible = false;
+            this.dgvBills.Columns["rowid"].Visible = false;
 
                 
-                this.dgvBills.Columns["PARTICULAR"].FillWeight = 150;
-                this.dgvBills.Columns["BILLNO"].FillWeight = 20;
-                this.dgvBills.Columns["NAAM"].FillWeight = 50;
-                this.dgvBills.Columns["JAMA"].FillWeight = 50;
-                this.dgvBills.Columns["DATE"].FillWeight = 30;
-                this.dgvBills.Columns["BALANCE"].FillWeight = 50;
+            this.dgvBills.Columns["PARTICULAR"].FillWeight = 150;
+            this.dgvBills.Columns["BILLNO"].FillWeight = 20;
+            this.dgvBills.Columns["NAAM"].FillWeight = 50;
+            this.dgvBills.Columns["JAMA"].FillWeight = 50;
+            this.dgvBills.Columns["DATE"].FillWeight = 30;
+            this.dgvBills.Columns["BALANCE"].FillWeight = 50;
             dgvBills.DefaultCellStyle.Font = Global.getSystemFont(11);
             dgvBills.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(11);
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message);
-            //}
+            
         }
 
         private void dgvBills_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -138,46 +133,17 @@ namespace constructionSite.Views
         {
             var dgvTemp = GetTempDgv();
             
-            //int height = dgvTemp.Height;
             int printWidth = 800;
-            //int dvgWidth = dgvTemp.Width;
             dgvTemp.Width = printWidth;
 
             SetTempColWidth(dgvTemp);
 
             dgvTemp.Height = dgvTemp.RowCount * dgvTemp.RowTemplate.Height * 2;
 
-            //dgvTemp.AutoResizeRows();
-
-            //bmp = new Bitmap(dgvTemp.Width, dgvTemp.Height);
-            //dgvTemp.DrawToBitmap(bmp, new Rectangle(0, 0, dgvTemp.Width, dgvTemp.Height));
-
-            var fileName = projectWorker.personName;
-            Extensions.PrintPDF(dgvTemp, fileName);
+            
+            var fileName = $"{projectWorker.personName} - Worker";
+            Extensions.PrintPDF(dgvTemp, fileName, $"Title: All Bills\nType: Worker\nName: {projectWorker.personName}\nContact: {projectWorker.contactNo}");
             dgvTemp.Dispose();
-            //dgvTemp.Height = height;
-            //dgvTemp.Width = dvgWidth;
-            //printPreviewDialog1.ShowDialogWithMargin();
-
-
-            //dgvBills.DefaultCellStyle.Font = Global.getSystemFont(9);
-            //dgvBills.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(8);
-
-
-            //int height = dgvBills.Height;
-            //int printWidth = 800;
-            //int dvgWidth = dgvBills.Width;
-            //dgvBills.Width = printWidth;
-
-            //dgvBills.Height = dgvBills.RowCount * dgvBills.RowTemplate.Height * 2;
-            //bmp = new Bitmap(dgvBills.Width, dgvBills.Height);
-            //dgvBills.DrawToBitmap(bmp, new Rectangle(0, 0, dgvBills.Width, dgvBills.Height));
-            //dgvBills.Height = height;
-            //dgvBills.Width = dvgWidth;
-            //printPreviewDialog1.ShowDialog();
-
-            //dgvBills.DefaultCellStyle.Font = Global.getSystemFont(11);
-            //dgvBills.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(11);
 
         }
 
@@ -186,7 +152,7 @@ namespace constructionSite.Views
             e.Graphics.DrawImage(bmp, 0, 0);
         }
 
-        void SetTempColWidth(DataGridView dgv)
+        DataGridView SetTempColWidth(DataGridView dgv)
         {
             var docWidth = printPreviewDialog1.Document.DefaultPageSettings.PaperSize.Width;
 
@@ -196,7 +162,7 @@ namespace constructionSite.Views
             dgv.Columns["naam"].Width = Global.GetScreenWidthInPixcel(10, docWidth);
             dgv.Columns["jama"].Width = Global.GetScreenWidthInPixcel(10, docWidth);
             dgv.Columns["balance"].Width = Global.GetScreenWidthInPixcel(10, docWidth);
-
+            return dgv;
         }
 
         DataGridView GetTempDgv()
@@ -208,25 +174,24 @@ namespace constructionSite.Views
             dgvTemp.ColumnHeadersDefaultCellStyle.Font = Global.getSystemFont(8);
             dgvTemp.AllowUserToAddRows = false;
 
+           
             int colCount = 0;
             foreach (DataGridViewColumn col in dgvBills.Columns)
             {
                 dgvTemp.Columns.Add(col.Clone() as DataGridViewColumn);
                 colCount++;
             }
-
+            dgvTemp = SetTempColWidth(dgvTemp);
             foreach (DataGridViewRow row in dgvBills.Rows)
             {
                 var r = row.Clone() as DataGridViewRow;
                 for (int i = 0; i < row.Cells.Count; i++)
                 {
-                    //DataGridViewCell cell = row.Cells[i].Clone() as DataGridViewCell;
                     r.Cells[i].Value = row.Cells[i].Value;
                 }
                 dgvTemp.Rows.Add(r);
 
             }
-
             dgvTemp.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dgvTemp.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True;
             return dgvTemp;

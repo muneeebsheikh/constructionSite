@@ -13,7 +13,8 @@ namespace constructionSite.Model
     public static class Extensions
     {
         private static readonly Font contentFont = new Font(Font.FontFamily.HELVETICA, 10, 0);
-        private static readonly Font headingFont = new Font(Font.FontFamily.HELVETICA, 10, 1);
+        private static readonly Font headingFont = new Font(Font.FontFamily.HELVETICA, 8, 1);
+        private static readonly float CellMinimumHeight = 20;
         static readonly IElement __NEWLINE__ = new Phrase(Chunk.NEWLINE);
         static readonly IElement __SEPARATOR__ = new Chunk($"------------------------------------------------------------");
         static readonly Chunk __SYSTEMGENERATED__ = new Chunk("**** THIS IS A SYSTEM GENERATED FILE *****", new Font(Font.FontFamily.HELVETICA, 12, 1));
@@ -48,7 +49,11 @@ namespace constructionSite.Model
         }
         public static void PrintPDF(DataGridView dataGridView, string fileName, string ContentHeading = "")
         {
+            var _log = new Logger.Logger("Extensions");
+            _log.Info("PrintPDF started");
+            _log.Info($"filename: {fileName}");
             fileName = fileName.Trim();
+            _log.Info($"Grid row count: {dataGridView.Rows.Count}");
             if (dataGridView.Rows.Count > 0)
             {
                 SaveFileDialog sfd = new SaveFileDialog
@@ -84,14 +89,14 @@ namespace constructionSite.Model
                         }
                         foreach (DataGridViewRow row in dataGridView.Rows)
                         {
+                            row.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                             foreach (DataGridViewCell cell in row.Cells)
                             {
                                 if (cell.OwningColumn.Visible)
                                 {
-                                    PdfPCell c = new PdfPCell(new Phrase(cell.Value.ToString(), contentFont))
-                                    {
-                                        FixedHeight = row.Height,
-                                    };
+
+                                    PdfPCell c = new PdfPCell(new Phrase(cell.Value.ToString(), contentFont));
+                                    c.MinimumHeight = CellMinimumHeight;
                                     pdfTable.AddCell(c);
                                 }
                             }
@@ -103,7 +108,7 @@ namespace constructionSite.Model
                             PdfWriter.GetInstance(pdfDoc, stream);
                             pdfDoc.Open();
                             var title = !string.IsNullOrEmpty(ContentHeading) ? ContentHeading : $"Title: {fileName}";
-                            
+                            title = $"Date: {DateTime.Now:dd-MMM-yyyy hh:mm tt}\n{title}";
                             IElement titleElement = new Phrase(title + Chunk.NEWLINE, new Font(Font.FontFamily.HELVETICA, 12, 1));
                             
                             
@@ -140,9 +145,15 @@ namespace constructionSite.Model
                     }
                     catch(Exception ex)
                     {
+                        _log.Error(ex, "");
                         MessageBox.Show(ex.Message);
                     }
                 }
+            }
+            else
+            {
+                _log.Info("No Data Found to print!");
+                MessageBox.Show("No Data Found to print!");
             }
         }
 

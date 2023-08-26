@@ -88,7 +88,7 @@ namespace constructionSite.Controller
 
         private SQLiteConnection conn;
         private static DbHelper obj;
-
+        private static Logger.Logger _log = new Logger.Logger("DBHelper");
         private DbHelper()
         {
             initDB();
@@ -166,12 +166,13 @@ namespace constructionSite.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error(ex, "insertCompanyBill");
             }
             return n;
         }
         public int insertWorkerBill(string billno, string date, int amount, string particular, string imagePath, string type, string personName, string projectPlotNo, string projectName)
         {
+            _log.Info($"insertWorkerBill started - billno: {billno}");
             int n = 0;
             try
             {
@@ -180,9 +181,9 @@ namespace constructionSite.Controller
                     using (SQLiteCommand cmd = new SQLiteCommand(conn))
                     {
                         conn.Open();
-                        cmd.CommandText = "INSERT INTO WORKERBILL VALUES('" + billno + "', julianday('" + date + "'), "
-                            + amount + ", '" + type + "', '" + particular + "','" + imagePath + "','" + personName + "', '" + projectPlotNo + "'," +
-                            "'" + projectName + "')";
+                        var q = $@"INSERT INTO WORKERBILL VALUES('{billno}', julianday('{date}'), {amount}, '{type}', '{particular}', '{imagePath}', '{personName}', '{projectPlotNo}', '{projectName}')";
+                        _log.Debug(q);
+                        cmd.CommandText = q;
                         n = cmd.ExecuteNonQuery();
                         conn.Close();
                     }
@@ -190,7 +191,11 @@ namespace constructionSite.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error(ex, "insertWorkerBill");
+            }
+            finally
+            {
+                _log.Info($"insertWorkerBill ended - billno: {billno}");
             }
             return n;
         }
@@ -215,7 +220,7 @@ namespace constructionSite.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error(ex, "insertRecievePayment");
             }
             return n;
         }
@@ -240,7 +245,7 @@ namespace constructionSite.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error(ex, "insertCompany");
             }
             return n;
         }
@@ -250,7 +255,6 @@ namespace constructionSite.Controller
             int n = 0;
             try
             {
-                Console.WriteLine(contactno);
                 using (conn = new SQLiteConnection("data source = " + DB_NAME))
                 {
                     using (SQLiteCommand cmd = new SQLiteCommand(conn))
@@ -266,7 +270,7 @@ namespace constructionSite.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error(ex, "insertWorker");
             }
             return n;
         }
@@ -471,27 +475,32 @@ namespace constructionSite.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error(ex, "insertProject");
             }
             return n;
         }
 
         public DataTable getProject_table()
         {
-            DataTable table = new DataTable();
-            using (conn = new SQLiteConnection("data source = " + DB_NAME))
+            try
             {
-                conn.Open();
-                var sqliteAdapter = new SQLiteDataAdapter("SELECT plotno, date(date) date, name, contactno, status FROM PROJECT", conn);
-                var cmdBuilder = new SQLiteCommandBuilder(sqliteAdapter);
-                sqliteAdapter.Fill(table);
-                sqliteAdapter.Update(table);
-                Console.WriteLine("DbHelper");
-                Console.WriteLine("Cols: " + table.Columns.Count);
-                Console.WriteLine("Rows: " + table.Rows.Count);
-                conn.Close();
+                DataTable table = new DataTable();
+                using (conn = new SQLiteConnection("data source = " + DB_NAME))
+                {
+                    conn.Open();
+                    var sqliteAdapter = new SQLiteDataAdapter("SELECT plotno, date(date) date, name, contactno, status FROM PROJECT", conn);
+                    var cmdBuilder = new SQLiteCommandBuilder(sqliteAdapter);
+                    sqliteAdapter.Fill(table);
+                    sqliteAdapter.Update(table);
+                    conn.Close();
+                }
+                return table;
             }
-            return table;
+            catch (Exception ex)
+            {
+                _log.Error(ex, "getProject_table");
+                throw;
+            }
         }
 
         public void deleteProject(string plotNo, string name)
